@@ -1,0 +1,3 @@
+app/src/*
+mysql-data/*
+!.gitkeep

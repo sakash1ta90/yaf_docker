@@ -1,0 +1,41 @@
+version: "3.7"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    volumes:
+      - ./app/src:/var/www/html
+    links:
+      - mysql
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_DATABASE=laravel
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+    container_name: app
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - 80:80
+    links:
+      - app
+    depends_on:
+      - app
+    container_name: nginx
+  mysql:
+    build: ./mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=laravel
+      - TZ=Asia/Tokyo
+    container_name: db
+    volumes:
+      - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./mysql-data:/var/lib/mysql
+    ports:
+      - 3306:3306
